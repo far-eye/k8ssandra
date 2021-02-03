@@ -1,0 +1,15 @@
+
+image:
+  repository: dtzar/helm-kubectl
+  pullPolicy: IfNotPresent
+  tag: latest
+
+
+cronJobs:
+  - name: k8ssandra-backup
+    restartPolicy: OnFailure
+    schedule: "0 * * * *"
+    containers :
+      - command : "helm --help && helm repo add k8ssandra https://helm.k8ssandra.io/ && helm -n k8ssandra2 upgrade -i backup-k8ssandra k8ssandra/backup --set name=bck-test2,cassandraDatacenter.name=k8s-dc1"
+      
+

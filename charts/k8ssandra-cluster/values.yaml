@@ -4,19 +4,19 @@
 
 name: k8ssandra
 clusterName: k8ssandra
-datacenterName: dc1
+datacenterName: k8s-dc1
 rackName: default # this is the only supported value for now
-size: 1
+size: 3
 
 k8ssandra:
   # The k8ssandra chart installs operators with cluster scope. It can be installed in a
   # different namespace. The namespace and name of the k8ssandra chart release are needed
   # to configure some resources like the Grafana data source.
   namespace: default
-  name: k8ssandra
+  name: k8ssandra2
   cassandraLibDirVolume:
-    storageClass: standard
-    size: 5Gi
+    storageClass: gp2
+    size: 100Gi
 
 stargate:
   # configuration regarding the Stargate API
@@ -40,7 +40,7 @@ repair:
 backupRestore:
   medusa:
     # If enabled, bucketName and bucketSecret must be defined.
-    enabled: false
+    enabled: true
 
     # Set to true to use the same bucket across multiple clusters.
     multiTenant: false
@@ -49,11 +49,11 @@ backupRestore:
     storage: s3
 
     # Must be set to the name of the remote storage bucket where backups will be stored.
-    bucketName: ""
+    bucketName: "k8s-staging"
 
     # Must be set and specify the name of the secret that stores the key file for Google
     # Cloud or AWS
-    bucketSecret: ""
+    bucketSecret: "medusa-bucket-key"
 
 # Support for accessing the various web-interfaces via K8s ingress controllers.
 # Depending on the ingress available in your cluster enable the appropriate
@@ -73,7 +73,7 @@ ingress:
         - web
 
       # Hostname Traefik should use for matching requests.
-      host: repair.k8ssandra.cluster.local
+      host: repair.k8ssandra.fareye.ml
 
     # Cassandra native transport ingress support
     cassandra:
@@ -95,7 +95,7 @@ ingress:
           - web
 
         # Hostname Traefik should use for matching requests.
-        host: grafana.k8ssandra.cluster.local
+        host: grafana.k8ssandra.fareye.ml
 
       prometheus:
         # Note this will **only** work if `ingress.traefik.enabled` is also `true`
@@ -106,7 +106,7 @@ ingress:
           - web
 
         # Hostname Traefik should use for matching requests.
-        host: prometheus.k8ssandra.cluster.local
+        host: prometheus.k8ssandra.fareye.ml
 
 monitoring:
   grafana:

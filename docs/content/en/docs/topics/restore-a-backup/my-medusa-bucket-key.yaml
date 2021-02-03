@@ -7,5 +7,5 @@ stringData:
  # Note that this currently has to be set to medusa_s3_credentials!
  medusa_s3_credentials: |-
    [default]
-   aws_access_key_id = my_access_key
-   aws_secret_access_key = my_secret_key
+   aws_access_key_id = AKIATQZVQC4UJ7UHXW7F
+   aws_secret_access_key = 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

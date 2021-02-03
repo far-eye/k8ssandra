@@ -1,0 +1,29 @@
+{{- $fullName := include "backupcron.fullname" . -}}
+{{- range .Values.cronJobs}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{.name}}
+spec:
+  schedule: "{{ .schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            {{- range .containers }}
+            - name: "{{ $.Chart.Name }}-cron"
+              {{ if .image }}image: {{ .image }} {{ else }}image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"{{ end }}
+              {{ if .command }}
+              command: ["sh", "-c", {{ .command | quote }} ]
+              {{end }}
+              {{ if .args }}
+              args:
+                {{- range .args }}
+                  - {{ .  }}
+                {{- end }}
+              {{end }}
+            {{- end }}
+          restartPolicy: {{ .restartPolicy }}
+---
+{{- end -}}

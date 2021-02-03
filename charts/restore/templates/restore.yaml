@@ -9,4 +9,4 @@ spec:
     name: {{ .Values.cassandraDatacenter.name }}
     # The CRD currently requires clusterName but the operator uses reuses the cluster name
     # from the backup CassandraDatacenter
-    clusterName: {{ .Values.cassandraDatacenter.name }}
+    clusterName: {{ .Values.backup.cassandraDatacenter.name }}
