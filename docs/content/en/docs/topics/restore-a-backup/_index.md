@@ -82,6 +82,28 @@ kubectl apply -f my-medusa-bucket-key.yaml
 secret/medusa-bucket-key configured
 ```
 
+### Set S3 storage provider
+Available storage providers for S3:
+S3_AP_NORTHEAST = 's3_ap_northeast'
+S3_AP_NORTHEAST1 = 's3_ap_northeast_1'
+S3_AP_NORTHEAST2 = 's3_ap_northeast_2'
+S3_AP_SOUTH = 's3_ap_south'
+S3_AP_SOUTHEAST = 's3_ap_southeast'
+S3_AP_SOUTHEAST2 = 's3_ap_southeast2'
+S3_CA_CENTRAL = 's3_ca_central'
+S3_CN_NORTH = 's3_cn_north'
+S3_CN_NORTHWEST = 's3_cn_northwest'
+S3_EU_WEST = 's3_eu_west'
+S3_EU_WEST2 = 's3_eu_west_2'
+S3_EU_CENTRAL = 's3_eu_central'
+S3_SA_EAST = 's3_sa_east'
+S3_US_EAST2 = 's3_us_east_2'
+S3_US_WEST = 's3_us_west'
+S3_US_WEST_OREGON = 's3_us_west_oregon'
+S3_US_GOV_WEST = 's3_us_gov_west'
+S3_RGW = 's3_rgw'
+S3_RGW_OUTSCALE = 's3_rgw_outscale'
+
 ### Create or update the k8ssandra-cluster
 
 Install the k8ssandra-cluster chart with the following properties. Backup and restore operations are enabled by default. In the following example, `bucketName` corresponds to the name of the S3 bucket: `K8ssanda-bucket-dev`.  The `bucketSecret` corresponds to the secret credentials.

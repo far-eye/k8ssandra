@@ -22,7 +22,7 @@ spec:
   # database in a Kubernetes secret. Cass Operator will read the secret and pass
   # the values to the Management API when managing the cluster. If this is
   # empty, Cass Operator will generate a secret instead.
-  superuserSecretName: "k8ssandra-superuser"
+  # superuserSecretName: "k8ssandra-superuser"
   managementApiAuth:
     insecure: {}
   size: {{ .Values.size }}
@@ -95,7 +95,7 @@ spec:
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
             name: server-data
-{{- if eq .Values.backupRestore.medusa.storage "s3"}}
+{{- if and (eq .Values.backupRestore.medusa.storage "s3") .Values.backupRestore.medusa.bucketSecretProvided }}
           - name: {{ .Values.backupRestore.medusa.bucketSecret }}
             mountPath: /etc/medusa-secrets
 {{- else if eq .Values.backupRestore.medusa.storage "gcs"}}
@@ -143,8 +143,10 @@ spec:
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
             name: server-data
+          {{- if .Values.backupRestore.medusa.bucketSecretProvided }}
           - mountPath: /etc/medusa-secrets
             name: {{ .Values.backupRestore.medusa.bucketSecret }}
+          {{- end }}
       volumes:
       - name: {{ .Release.Name }}-medusa-config-k8ssandra
         configMap:
@@ -154,8 +156,10 @@ spec:
               path: medusa.ini
       - name: cassandra-config
         emptyDir: {}
+      {{- if .Values.backupRestore.medusa.bucketSecretProvided }}
       - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
         secret:
           secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
+      {{- end }}
 {{- end }}
 {{- end }}

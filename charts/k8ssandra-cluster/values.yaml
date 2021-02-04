@@ -13,7 +13,7 @@ k8ssandra:
   # different namespace. The namespace and name of the k8ssandra chart release are needed
   # to configure some resources like the Grafana data source.
   namespace: default
-  name: k8ssandra2
+  name: k8ssandra-test
   cassandraLibDirVolume:
     storageClass: gp2
     size: 100Gi
@@ -53,7 +53,8 @@ backupRestore:
 
     # Must be set and specify the name of the secret that stores the key file for Google
     # Cloud or AWS
-    bucketSecret: "medusa-bucket-key"
+    bucketSecretProvided : false
+    bucketSecret: ""
 
 # Support for accessing the various web-interfaces via K8s ingress controllers.
 # Depending on the ingress available in your cluster enable the appropriate
