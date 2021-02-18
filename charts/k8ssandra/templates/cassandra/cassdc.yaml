@@ -35,6 +35,10 @@ spec:
     {{- end}}
   {{- end }}
   {{- end }}
+  # forceUpgradeRacks:
+  #   - r1
+  #   - r2
+  #   - r3
   storageConfig:
     cassandraDataVolumeClaimSpec:
       storageClassName: {{ .Values.cassandra.cassandraLibDirVolume.storageClass | default "standard" }}
@@ -74,6 +78,7 @@ spec:
       superuser: true
   {{- end }}
 {{- end }}
+  # rollingRestartRequested: true
   config:    
     cassandra-yaml:
 {{- if .Values.cassandra.auth.enabled }}
@@ -115,6 +120,17 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                - cassandra
+      nodeSelector:
+        dedicated: cassandra       
 {{- if or .Values.repair.reaper.enabled .Values.backupRestore.medusa.enabled }}
       initContainers:
       {{/* The server-config-init container is "built-in" in that it is provided by
@@ -195,7 +211,7 @@ spec:
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
             name: server-data
-{{- if eq .Values.backupRestore.medusa.storage "s3"}}
+{{- if and (eq .Values.backupRestore.medusa.storage "s3") .Values.backupRestore.medusa.bucketSecretProvided }}
           - name: medusa-bucket-key
             mountPath: /etc/medusa-secrets
 {{- else if eq .Values.backupRestore.medusa.storage "gcs"}}
@@ -267,8 +283,10 @@ spec:
             mountPath: /etc/cassandra
           - mountPath: /var/lib/cassandra
             name: server-data
+            {{- if .Values.backupRestore.medusa.bucketSecretProvided }}
           - mountPath: /etc/medusa-secrets
             name: {{ .Values.backupRestore.medusa.bucketSecret }}
+            {{- end }}
       volumes:
       - name: {{ .Release.Name }}-medusa-config-k8ssandra
         configMap:
@@ -278,8 +296,10 @@ spec:
               path: medusa.ini
       - name: cassandra-config
         emptyDir: {}
+      {{- if .Values.backupRestore.medusa.bucketSecretProvided }}
       - name:  {{ .Values.backupRestore.medusa.bucketSecret }}
         secret:
           secretName: {{ .Values.backupRestore.medusa.bucketSecret }}
+      {{- end }}
 {{- end }}
 {{- end }}

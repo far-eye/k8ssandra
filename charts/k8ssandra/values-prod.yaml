@@ -39,7 +39,13 @@ cassandra:
   #  size: 800M
   #  newGenSize: 400M
 
-  resources: {}
+  resources:
+    requests:
+      memory: 4Gi
+      cpu: 500m
+    limits:
+      memory: 8Gi
+      cpu: 4000m
 
   datacenters:
   - name: k8s-dc2
@@ -82,8 +88,8 @@ cassandra:
     - name: r3
 
     # -- Optional dc-level heap setting, overrides cluster-level
-    #heap:
-    #size: 800M
+    heap:
+      size: 4000M
     #newGenSize: 400M
 
 stargate:
@@ -191,7 +197,7 @@ backupRestore:
     storageProvider: s3_us_west_oregon
 
     # Must be set to the name of the remote storage bucket where backups will be stored.
-    bucketName: "k8s-staging"
+    bucketName: "prod-k8s"
 
     # Must be set and specify the name of the secret that stores the key file for Google
     # Cloud or AWS
@@ -265,7 +271,7 @@ cleaner:
   image: k8ssandra/k8ssandra-cleaner:618b8ff9d368
 
 cass-operator:
-  enabled: false
+  enabled: true
 
 reaper-operator:
   enabled: true

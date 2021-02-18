@@ -20,7 +20,7 @@ data:
 
     [storage]
 {{- if eq .Values.backupRestore.medusa.storage "s3" }}
-    storage_provider = s3
+    storage_provider = {{ .Values.backupRestore.medusa.storageProvider | default "s3" }}
 {{- else if eq .Values.backupRestore.medusa.storage "gcs" }}
     storage_provider = gcs
 {{- end }}
