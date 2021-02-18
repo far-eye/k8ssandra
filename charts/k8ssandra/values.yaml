@@ -5,7 +5,7 @@
 cass-operator:
   # Namespace-scoped installs are currently not (well) supported.
   # See K8C-19 for details.
-  clusterWideInstall: true
+  clusterWideInstall: false
 
   # We need to use a patched version of cass-operator for now that has changes needed in
   # for Reaper and Medusa integration. Images will be built from
