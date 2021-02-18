@@ -10,6 +10,7 @@ cass-operator:
   # We need to use a patched version of cass-operator for now that has changes needed in
   # for Reaper and Medusa integration. Images will be built from
   # https://github.com/jsanda/cass-operator/tree/k8ssandra.
+  # image: jsanda/cass-operator:91205f4d8f1e
   image: jsanda/cass-operator:91205f4d8f1e
 
 kube-prometheus-stack:
