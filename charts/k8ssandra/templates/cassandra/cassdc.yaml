@@ -3,7 +3,7 @@
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
-  name: {{ $datacenter.name }}
+  name: dc1
   labels: {{ include "k8ssandra.labels" . | indent 4 }}
   annotations:
 {{- if .Values.repair.reaper.enabled }}
@@ -11,7 +11,7 @@ metadata:
 {{- end }}
 spec:
   clusterName: {{ .Values.cassandra.clusterName }}
-  serverType: cassandra
+  serverType: "cassandra"
   serverVersion: {{ .Values.cassandra.version | quote }}
   dockerImageRunsAsCassandra: false
 {{- if eq "3.11.7" .Values.cassandra.version }}
@@ -115,7 +115,7 @@ spec:
 {{- end}}
       additional-jvm-opts:
 {{- if .Values.cassandra.auth.enabled }}
-        - "-Dcassandra.system_distributed_replication_dc_names={{ $datacenter.name }}"
+        - "-Dcassandra.system_distributed_replication_dc_names=dc1"
         - "-Dcassandra.system_distributed_replication_per_dc={{ min 5 $datacenter.size }}"
 {{- end }}
   podTemplateSpec:

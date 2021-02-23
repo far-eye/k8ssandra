@@ -1,5 +1,5 @@
 cassandra:
-  version: "3.11.9"
+  version: "3.11.7"
   clusterName: k8ssandra
   # auth is authentication and authorization related settings.
   auth:
@@ -48,7 +48,7 @@ cassandra:
       cpu: 4000m
 
   datacenters:
-  - name: k8s-dc2
+  - name: dc1
     size: 3
     # racks is an array that specifies the racks for the data center. If not set the data
     # center will be configured with a single rack named default.
