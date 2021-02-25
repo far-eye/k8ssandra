@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -23,16 +24,11 @@ var _ = Describe("Verify reaper user secret template", func() {
 	})
 
 	renderTemplate := func(options *helm.Options) error {
-		renderedOutput, err := helm.RenderTemplateE(
-			GinkgoT(), options, helmChartPath, HelmReleaseName,
-			[]string{"templates/reaper/reaper-user-secret.yaml"},
-		)
-
-		if err == nil {
-			err = helm.UnmarshalK8SYamlE(GinkgoT(), renderedOutput, secret)
-		}
-
-		return err
+		return helmUtils.RenderAndUnmarshall("templates/reaper/reaper-user-secret.yaml",
+			options, helmChartPath, HelmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, secret)
+			})
 	}
 
 	Context("generating reaper user secret", func() {
@@ -42,9 +38,9 @@ var _ = Describe("Verify reaper user secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":                clusterName,
-					"cassandra.auth.enabled":               "true",
-					"repair.reaper.cassandraUser.username": username,
+					"cassandra.clusterName":         clusterName,
+					"cassandra.auth.enabled":        "true",
+					"reaper.cassandraUser.username": username,
 				},
 			}
 
@@ -75,9 +71,9 @@ var _ = Describe("Verify reaper user secret template", func() {
 			options := &helm.Options{
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
-					"cassandra.clusterName":              clusterName,
-					"cassandra.auth.enabled":             "true",
-					"repair.reaper.cassandraUser.secret": "reaper-secret",
+					"cassandra.clusterName":       clusterName,
+					"cassandra.auth.enabled":      "true",
+					"reaper.cassandraUser.secret": "reaper-secret",
 				},
 			}
 

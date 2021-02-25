@@ -1,12 +1,13 @@
 package unit_test
 
 import (
+	"path/filepath"
+	"strings"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"path/filepath"
-	"strings"
 )
 
 var _ = Describe("Verify k8ssandra and dependent template labels", func() {
@@ -33,14 +34,18 @@ var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 				KubectlOptions: defaultKubeCtlOptions,
 				SetValues: map[string]string{
 					"stargate.enabled":                              "true",
-					"stargate.cassandra.enabled":                    "true",
-					"repair.reaper.enabled":                         "true",
-					"backupRestore.medusa.enabled":                  "true",
-					"ingress.traefik.enabled":                       "true",
+					"reaper.enabled":                                "true",
+					"medusa.enabled":                                "true",
+					"reaper.ingress.enabled":                        "true",
+					"reaper.ingress.host":                           "reaper.host",
+					"cassandra.ingress.enabled":                     "false",
 					"ingress.traefik.monitoring.grafana.enabled":    "true",
 					"ingress.traefik.monitoring.prometheus.enabled": "true",
-					"ingress.traefik.stargate.enabled":              "true",
-					"ingress.traefik.cassandra.enabled":             "true",
+					"stargate.ingress.enabled":                      "true",
+					"stargate.ingress.auth.enabled":                 "true",
+					"stargate.ingress.rest.enabled":                 "true",
+					"stargate.ingress.graphql.enabled":              "true",
+					"stargate.ingress.graphql.playground.enabled":   "true",
 					"cassandra.auth.enabled":                        "true",
 					"cassandra.auth.superuser.username":             "admin",
 					"cassandra.clusterName":                         "test-cluster",
@@ -55,6 +60,10 @@ var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 				var k8ssandraTemplates map[string]interface{}
 				idx := strings.Index(template, "templates")
 
+				if template[idx:] == "templates/cassandra/ingress.yaml" {
+					continue
+				}
+
 				templateOutput, err := helm.RenderTemplateE(GinkgoT(), options,
 					localChartsPath, HelmReleaseName, []string{filepath.Join(".", template[idx:])})
 
@@ -67,6 +76,7 @@ var _ = Describe("Verify k8ssandra and dependent template labels", func() {
 					Expect(k8ssandraTemplates["metadata"].(map[string]interface{})["labels"]).To(HaveKeyWithValue(k, v))
 				}
 			}
+
 		})
 	})
 

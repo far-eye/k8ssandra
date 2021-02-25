@@ -1,7 +1,7 @@
 ---
-title: "Provision a Cluster"
-linkTitle: "Provision a Cluster"
-weight: 1
+title: "Scale your Cassandra Cluster"
+linkTitle: "Scale Cassandra"
+weight: 4
 description: Steps to provision a cluster in Kubernetes
 ---
 
@@ -399,7 +399,7 @@ size: 3
 
 ### Scale down the cluster
 
-Similarly, to scale down, lower the current `size` to conserve cloud resource costs, if the new value can support your computing reqiuirements in Kubernetes.  Example:
+Similarly, to scale down, lower the current `size` to conserve cloud resource costs, if the new value can support your computing requirements in Kubernetes.  Example:
 
 `helm upgrade k8ssandra-a k8ssandra/k8ssandra --set size=1 --reuse-values`
 ```

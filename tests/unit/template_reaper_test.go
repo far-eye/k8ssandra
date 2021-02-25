@@ -1,6 +1,7 @@
 package unit_test
 
 import (
+	helmUtils "github.com/k8ssandra/k8ssandra/tests/unit/utils/helm"
 	"path/filepath"
 
 	"github.com/gruntwork-io/terratest/modules/helm"
@@ -26,13 +27,12 @@ var _ = Describe("Verify Reaper template", func() {
 		err = nil
 	})
 
-	renderTemplate := func(options *helm.Options) {
-		renderedOutput := helm.RenderTemplate(
-			GinkgoT(), options, helmChartPath, HelmReleaseName,
-			[]string{"templates/reaper/reaper.yaml"},
-		)
-
-		helm.UnmarshalK8SYaml(GinkgoT(), renderedOutput, reaper)
+	renderTemplate := func(options *helm.Options) error {
+		return helmUtils.RenderAndUnmarshall("templates/reaper/reaper.yaml",
+			options, helmChartPath, HelmReleaseName,
+			func(renderedYaml string) error {
+				return helm.UnmarshalK8SYamlE(GinkgoT(), renderedYaml, reaper)
+			})
 	}
 
 	Context("by rendering it with options", func() {
@@ -63,7 +63,7 @@ var _ = Describe("Verify Reaper template", func() {
 
 		It("modifying autoscheduling option", func() {
 			options := &helm.Options{
-				SetStrValues:   map[string]string{"repair.reaper.autoschedule": "true"},
+				SetStrValues:   map[string]string{"reaper.autoschedule": "true"},
 				KubectlOptions: defaultKubeCtlOptions,
 			}
 

@@ -1,4 +1,17 @@
 {{- if .Values.stargate.enabled }}
+  {{- $stargateVersion := .Values.stargate.version }}
+  {{- $computedClusterVersion := "" }}
+  {{- $computedImage := "" }}
+  {{- if hasPrefix "3" .Values.cassandra.version }}
+    {{- $computedClusterVersion = "3.11" }}
+    {{- $computedImage = printf "stargateio/stargate-3_11:v%s" $stargateVersion }}
+  {{- else }}
+    {{- $computedClusterVersion = "4.0" }}
+    {{- $computedImage = printf "stargateio/stargate-4_0:v%s" $stargateVersion }}
+  {{- end }}
+  {{- $image := default $computedImage .Values.stargate.image -}}
+  {{- $clusterVersion := default $computedClusterVersion .Values.stargate.clusterVersion -}}
+  {{- $heapMB := required "stargate.heapMB is required" .Values.stargate.heapMB -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -8,7 +21,7 @@ metadata:
     app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
 {{ include "k8ssandra.labels" . | indent 4 }}
 spec:
-  replicas: {{ default 1 .Values.stargate.replicas }}
+  replicas: {{ required "stargate.replicas is required" .Values.stargate.replicas }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
@@ -27,23 +40,14 @@ spec:
               - -c
               - |
                 echo "Waiting for at least one cassandra node to finish bootstrapping..."
-                while ! nslookup {{ .Values.cassandra.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}; do
+                while ! nslookup {{ include "k8ssandra.clusterName" . }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}; do
                     sleep 5
                 done
                 echo "Cassandra is ready. Starting Stargate..."
       containers:
         - name: {{ .Release.Name }}-{{ include "k8ssandra.datacenterName" . }}-stargate
-  {{- if eq .Values.stargate.containerImage "auto" }}
-    {{- if eq .Values.stargate.clusterVersion "3.11" }}
-          image: "stargateio/stargate-3_11:v1.0.0"
-    {{- else if eq .Values.stargate.clusterVersion "4.0" }}
-          image: "stargateio/stargate-4_0:v1.0.0"
-    {{- else }}
-      {{- fail "clusterVersion .Values.stargate.clusterVersion is not supported." }}
-    {{- end }}
-  {{- else }}
-          image: {{ required .Values.stargate.containerImage }}
-  {{- end }}
+          image: {{ $image }}
+          imagePullPolicy: {{ .Values.stargate.imagePullPolicy }}
           ports:
             - name: graphql
               containerPort: 8080
@@ -77,23 +81,23 @@ spec:
               protocol: TCP
           resources:
             limits:
-              cpu: {{ .Values.stargate.cpuLimMillicores | default 1000 }}m
-              memory: {{ mul 1.5 (.Values.stargate.heapMB | default 1024) }}Mi
+              cpu: {{ required "stargate.cpuLimMillicores is required" .Values.stargate.cpuLimMillicores }}m
+              memory: {{ mul 4 $heapMB }}Mi
             requests:
-              cpu: {{ .Values.stargate.cpuReqMillicores | default 200 }}m
-              memory: {{ mul 1.5 (.Values.stargate.heapMB | default 1024) }}Mi
+              cpu: {{ required "stargate.cpuReqMillicores" .Values.stargate.cpuReqMillicores }}m
+              memory: {{ mul 2 $heapMB }}Mi
           env:
             - name: JAVA_OPTS
               value: >-
                 -XX:+CrashOnOutOfMemoryError
-                -Xms{{ .Values.stargate.heapMB | default 1024 }}M
-                -Xmx{{ .Values.stargate.heapMB | default 1024 }}M
+                -Xms{{ $heapMB }}M
+                -Xmx{{ $heapMB }}M
             - name: CLUSTER_NAME
-              value: {{ .Values.cassandra.clusterName | quote }}
+              value: {{ include "k8ssandra.clusterName" . | quote }}
             - name: CLUSTER_VERSION
-              value: "{{ .Values.stargate.clusterVersion }}"
+              value: {{ $clusterVersion | quote }}
             - name: SEED
-              value: "{{ .Values.cassandra.clusterName }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}"
+              value: "{{ include "k8ssandra.clusterName" . }}-seed-service.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain | default "cluster.local" }}"
             - name: DATACENTER_NAME
               value: {{ include "k8ssandra.datacenterName" . }}
             - name: RACK_NAME
@@ -106,12 +110,12 @@ spec:
             httpGet:
               path: /checker/liveness
               port: health
-            timeoutSeconds: 3
-            initialDelaySeconds: 60
+            timeoutSeconds: 10
+            initialDelaySeconds: 240
           readinessProbe:
             httpGet:
               path: /checker/readiness
               port: health
             timeoutSeconds: 3
-            initialDelaySeconds: 60
+            initialDelaySeconds: 240
 {{- end }}
