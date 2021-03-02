@@ -123,17 +123,25 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
-      # affinity:
-      #   nodeAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #       nodeSelectorTerms:
-      #       - matchExpressions:
-      #         - key: dedicated
-      #           operator: In
-      #           values:
-      #           - cassandra
-      # nodeSelector:
-      #   dedicated: cassandra       
+
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                - cassandra
+
+      tolerations:
+      - key: "cassandra"
+        operator: "Equal"
+        value: "dedicated"
+        effect: "NoSchedule"
+
+      nodeSelector:
+        dedicated: cassandra
 
       initContainers:
       - name: server-config-init
