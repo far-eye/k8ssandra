@@ -160,6 +160,68 @@ Set default num_tokens based on the server version
 {{- end }}
 
 {{/*
+Generatea a random, alphanumeric password that is 20 characters long.
+**/}}
+{{- define "k8ssandra.password" -}}
+{{ randAlphaNum 20 }}
+{{- end }}
+
+{{/*
+Gets the superuser secret name.
+*/}}
+{{- define "k8ssandra.superuserSecretName" -}}
+{{- if .Values.cassandra.auth.superuser.secret -}}
+{{ .Values.cassandra.auth.superuser.secret }}
+{{- else }}
+{{- include "k8ssandra.clusterName" . }}-superuser
+{{- end }}
+{{- end }}
+
+{{/*
+Gets the reaper user secret name.
+*/}}
+{{- define "k8ssandra.reaperUserSecretName" }}
+{{- if .Values.reaper.cassandraUser.secret -}}
+{{ .Values.reaper.cassandraUser.secret }}
+{{- else }}
+{{- include "k8ssandra.clusterName" . }}-reaper
+{{- end }}
+{{- end }}
+
+{{/*
+Gets the reaper jmx user secret name.
+*/}}
+{{- define "k8ssandra.reaperJmxUserSecretName" }}
+{{- if .Values.reaper.jmx.secret -}}
+{{ .Values.reaper.jmx.secret }}
+{{- else }}
+{{- include "k8ssandra.clusterName" . }}-reaper-jmx
+{{- end }}
+{{- end }}
+
+{{/*
+Gets the medus user secret name.
+*/}}
+{{- define "k8ssandra.medusaUserSecretName" }}
+{{- if .Values.medusa.cassandraUser.secret -}}
+{{ .Values.medusa.cassandraUser.secret }}
+{{- else }}
+{{- include "k8ssandra.clusterName" . }}-medusa
+{{- end }}
+{{- end }}
+
+{{/*
+Gets the stargate user secret name.
+*/}}
+{{- define "k8ssandra.stargateUserSecretName" }}
+{{- if .Values.stargate.cassandraUser.secret -}}
+{{ .Values.stargate.cassandraUser.secret }}
+{{- else }}
+{{- include "k8ssandra.clusterName" . }}-stargate
+{{- end }}
+{{- end }}
+
+{{/*
 Creates Cassandra auth environment variables if authentication is enabled.
 */}}
 {{- define "medusa.cassandraAuthEnvVars" -}}
@@ -179,12 +241,12 @@ Creates Cassandra auth environment variables if authentication is enabled.
     {{- nindent 10 "- name: CQL_USERNAME" -}}
     {{- nindent 12 "valueFrom:" }}
     {{- nindent 14 "secretKeyRef:" }}
-    {{- nindent 16 (print "name: " (include "k8ssandra.clusterName" . ) "-medusa") }}
+    {{- nindent 16 (print "name: " (include "k8ssandra.medusaUserSecretName" . )) }}
     {{- nindent 16 "key: username" }}
     {{- nindent 10 "- name: CQL_PASSWORD" }}
     {{- nindent 12 "valueFrom:" }}
     {{- nindent 14 "secretKeyRef:" }}
-    {{- nindent 16 (print "name: " (include "k8ssandra.clusterName" . ) "-medusa") }}
+    {{- nindent 16 (print "name: " (include "k8ssandra.medusaUserSecretName" . )) }}
     {{- nindent 16 "key: password" }}
   {{- end -}}
 {{- end }}

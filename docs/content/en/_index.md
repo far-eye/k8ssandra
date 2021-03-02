@@ -32,7 +32,7 @@ linkTitle: K8ssandra
 				<div class="row">
 					<div id="hero" class="col text-align-center">
 						<div class="w-75 mx-auto text">
-							K8ssandra provides a production-ready platform for running Apache Cassandra on Kubernetes. This includes automation for operational tasks such as repairs, backups, and monitoring.
+							K8ssandra provides a production-ready platform for running Apache Cassandra® on Kubernetes. This includes automation for operational tasks such as repairs, backups, and monitoring.
 						</div>
 						<div class="mx-auto">
 							<a class="btn btn-lg btn-primary" href="{{< relref "docs" >}}">
@@ -101,7 +101,7 @@ linkTitle: K8ssandra
 		</div>
 		<div class="row">
 			<div class="col text-center">
-				<script id="asciicast-q6Hsqr6L2CSudxdqgCL5UeVa9" src="https://asciinema.org/a/q6Hsqr6L2CSudxdqgCL5UeVa9.js" async data-cols="128"></script>
+				<script id="asciicast-392352" src="https://asciinema.org/a/392352.js" async></script>
 			</div>
 		</div>
 	</main>
