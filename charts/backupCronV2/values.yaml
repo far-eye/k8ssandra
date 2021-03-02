@@ -72,16 +72,16 @@ resources: {}
 
 # affinity: {}
 
-targetNamespace: k8ssandra-exp
-backupName: bck-cassdc
-datacenterName: k8s-dc2
+# targetNamespace: k8ssandra-exp
+# backupName: bck-cassdc
+# datacenterName: k8s-dc2
 
 cronJobs:
   - name: k8ssandra-backup
     restartPolicy: OnFailure
     schedule: "0 * * * *"
     containers :
-      - command : "helm --help && helm repo add k8ssandra https://helm.k8ssandra.io/ && helm ls -n {{ $.targetNamespace }} && helm -n {{ $.targetNamespace }} upgrade -i backup-k8ssandra k8ssandra/backup --set name={{ $.backupName }},cassandraDatacenter.name={{ $.datacenterName }}"
+      - command : "helm --help && helm repo add k8ssandra https://helm.k8ssandra.io/ && helm ls -n k8ssandra-exp && helm -n k8ssandra-exp upgrade -i backup-k8ssandra k8ssandra/backup --set name=bck-cass4,cassandraDatacenter.name=k8s-dc2"
       
 
 

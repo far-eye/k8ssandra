@@ -41,10 +41,12 @@ spec:
   {{- end }}
   {{- end }}
 
+  rollingRestartRequested: true
+
   forceUpgradeRacks:
-    - r1
-    - r2
     - r3
+    - r2
+    - r1
 
   storageConfig:
     cassandraDataVolumeClaimSpec:
@@ -118,17 +120,17 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: dedicated
-                operator: In
-                values:
-                - cassandra
-      nodeSelector:
-        dedicated: cassandra       
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: dedicated
+      #           operator: In
+      #           values:
+      #           - cassandra
+      # nodeSelector:
+      #   dedicated: cassandra       
 
       initContainers:
       - name: server-config-init
