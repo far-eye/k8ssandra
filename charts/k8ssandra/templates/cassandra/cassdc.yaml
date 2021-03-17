@@ -134,15 +134,6 @@ spec:
                 values:
                 - cassandra
 
-      tolerations:
-      - key: "cassandra"
-        operator: "Equal"
-        value: "dedicated"
-        effect: "NoSchedule"
-
-      nodeSelector:
-        dedicated: cassandra
-
       initContainers:
       - name: server-config-init
      {{- if (or .Values.cassandra.auth.enabled .Values.reaper.enabled) }}
