@@ -123,17 +123,6 @@ spec:
 {{- end }}
   podTemplateSpec:
     spec:
-
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: dedicated
-                operator: In
-                values:
-                - cassandra
-
       initContainers:
       - name: server-config-init
      {{- if (or .Values.cassandra.auth.enabled .Values.reaper.enabled) }}
