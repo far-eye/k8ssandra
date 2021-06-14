@@ -10,7 +10,7 @@ spec:
     spec:
       template:
         spec:
-          serviceAccountName: {{ $.Values.serviceAccountName }}
+          serviceAccountName: {{ .Release.Name }}-backupCron-k8ssandra
           containers:
             {{- range .containers }}
             - name: "{{ $.Chart.Name }}-cron2"

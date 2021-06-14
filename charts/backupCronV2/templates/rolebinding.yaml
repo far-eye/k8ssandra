@@ -1,11 +1,11 @@
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Values.roleBindingName }}
+  name: {{ .Release.Name }}-backupCron-k8ssandra
 subjects:
 - kind: ServiceAccount
-  name: {{ .Values.serviceAccountName }}
+  name: {{ .Release.Name }}-backupCron-k8ssandra
 roleRef:
   kind: Role
-  name: {{ .Values.roleName }}
+  name: {{ .Release.Name }}-backupCron-k8ssandra
   apiGroup: rbac.authorization.k8s.io
