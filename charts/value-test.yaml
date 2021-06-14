@@ -1,0 +1,60 @@
+cassandra:
+  version: "3.11.7"
+  type: "cassandra"
+
+      # this should not be set - https://github.com/k8ssandra/k8ssandra/issues/503
+#       clusterName: "" 
+
+cassandraLibDirVolume:
+  storageClass: gp2
+  size: 100Gi
+
+resources:
+  requests:
+    memory: 4Gi
+    cpu: 1500m
+  limits:
+    memory: 6Gi
+    cpu: 2499m
+
+datacenters:
+# Note the odd spacing below is to assist with docs generation
+-
+  # -- Name of the datacenter
+  name: k8s-dc2
+
+  # -- Number of nodes within the datacenter. This value should, at a minimum,
+  # match the number of racks and be no less than 3 for non-development
+  # environments.
+  size: 3
+
+  # -- Number of tokens within the datacenter. If not defined, the default values will be
+  # used, which are 256 tokens for 3.11 releases and 16 tokens for 4.0 releases.
+  num_tokens: 256
+
+  racks:
+  - name: r1
+  - name: r2
+  - name: r3
+
+  heap: 
+    size: 2000M
+    #newGenSize:
+
+
+stargate:
+  # -- Enable Stargate resources as part of this release
+  enabled: false
+
+medusa:
+  enabled: true
+  storage: s3
+  storage_properties: 
+    region: us-west-2
+  bucketName: k8s-prod  # recheck name
+  bucketSecretProvided : false
+  storageSecret: ""
+
+kube-prometheus-stack:
+  # Controls whether this chart is installed at all.
+  enabled: false
