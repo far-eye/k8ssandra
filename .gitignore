@@ -252,7 +252,7 @@ tags
 charts/*/Chart.lock
 
 # Helm chart dependencies
-charts/*/charts/*.tgz
+# charts/*/charts/*.tgz
 
 # Local bin
 bin
